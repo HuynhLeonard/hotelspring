@@ -3,6 +3,7 @@ package com.leonard.demohotel.Service;
 import com.leonard.demohotel.Model.Room;
 import com.leonard.demohotel.Repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,22 +36,33 @@ public class RoomService implements IRoomService {
 
     @Override
     public List<String> getAllRoomTypes() {
-        return null;
+        return roomRepository.findDistinctRoomType();
     }
 
     @Override
     public List<Room> getAllRoom() {
-        return null;
+        return roomRepository.findAll();    // auto generate by JPA framework
     }
 
     @Override
     public byte[] getPhotoByRoomID(Long roomID) throws SQLException {
-        return new byte[0];
+        Optional<Room> theRoom = roomRepository.findById(roomID);
+        if(theRoom.isEmpty()) {
+            //throw new ResourceNotFoundException("Sorry, Room not found!");
+        }
+        Blob photoBlob = theRoom.get().getPhoto();
+        if(photoBlob != null) {
+            return photoBlob.getBytes(1, (int) photoBlob.length()); // get all the byte in the picture
+        }
+        return null;
     }
 
     @Override
     public void deleteRoom(Long roomID) {
-
+        Optional<Room> theRoom = roomRepository.findById(roomID);
+        if(theRoom.isPresent()) {
+            roomRepository.deleteById(roomID);
+        }
     }
 
     @Override
@@ -60,7 +72,7 @@ public class RoomService implements IRoomService {
 
     @Override
     public Optional<Room> getRoomByID(Long roomID) {
-        return Optional.empty();
+        return Optional.of(roomRepository.findById(roomID).get());
     }
 
     @Override
