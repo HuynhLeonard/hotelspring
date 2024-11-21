@@ -1,6 +1,7 @@
 package com.leonard.demohotel.Repository;
 
-import org.apache.catalina.Role;
+
+import com.leonard.demohotel.Model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
